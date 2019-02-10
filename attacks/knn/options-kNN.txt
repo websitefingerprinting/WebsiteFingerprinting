@@ -1,0 +1,14 @@
+#for all attacks
+OPEN	1
+DATA_LOC	/Users/aaron/WF/data/
+OUTPUT_LOC	/Users/aaron/WF/attacks/knn/output/
+
+
+#for gen-list
+CLOSED_SITENUM	10
+CLOSED_INSTNUM	90
+OPEN_INSTNUM	9000
+DATA_TYPE	cell
+FOLD_NUM	1
+FOLD_MODE	3
+ 
