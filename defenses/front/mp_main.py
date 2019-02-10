@@ -15,7 +15,7 @@ import configparser
 import time
 import datetime
 from pprint import pprint
-logger = logging.getLogger('ranpad2')
+logger = logging.getLogger('front')
 def init_directories():
     # Create a results dir if it doesn't exist yet
     if not os.path.exists(ct.RESULTS_DIR):
