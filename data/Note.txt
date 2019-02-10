@@ -9,3 +9,7 @@ data/example-dataset/100
 0-1 means the second instance for class 0 sensitive webpage
 
 100 means the 101st instance for nonsensitive webpage
+
+
+The dataset can be loaded from 
+https://www.cse.ust.hk/~taow/wf/data/
