@@ -1,0 +1,13 @@
+#for all attacks
+OPEN	1
+OUTPUT_LOC	/Users/aaron/WF/attacks/after-split-attack/mp-knn/output/
+
+
+#for gen-list
+CLOSED_SITENUM	100
+CLOSED_INSTNUM	90
+OPEN_INSTNUM	9000
+DATA_TYPE	cell
+FOLD_NUM	9
+FOLD_MODE	3
+ 
