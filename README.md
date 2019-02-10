@@ -1,9 +1,4 @@
 # Website Fingerprinting attack and defense codes. 
-
-## Prerequisites
-
-
-
 ## Folder structure
     .
     ├── attacks  #Wf attacks                     
