@@ -1,0 +1,11 @@
+This is the folder to put in dataset. 
+It looks like
+data/example-dataset/0-1
+data/example-dataset/100
+...
+
+
+
+0-1 means the second instance for class 0 sensitive webpage
+
+100 means the 101st instance for nonsensitive webpage
