@@ -100,8 +100,15 @@ It will generate a ".npy" file telling the prediction of l of all l-traces in te
 "-num" indicates this testset contains traces of length l.       
 trainset contains l-traces of different l; testset only contains traces of the same l.         
 
-
-
+## Split finding
+Go to "attack/xgboost"
+```
+python3 run_attack.py -train trainset -test testset -mode decision/finding -kdir ../decision/results/testset.npy
+```
+This corresponds to split finding process.    
+It will generate a splitresult.txt file telling where the splits are in a trace.     
+"-mode" whether you run split decision or not.     
+Note if mode is decision, then you should give the predicition of "l" using "-kdir "
 
 ## Versioning
 
