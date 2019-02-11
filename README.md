@@ -28,7 +28,7 @@ To run attacks, go to an attack folder.
 
 ### Run FRONT
 
-FRONT takes in a dataset folder, output a defended dataset into defenses/results/ folder 
+FRONT takes in a dataset folder, output a defended dataset into "defenses/results/" folder 
 ```
 python3 main.py ../../data/tor/
 ```
@@ -89,6 +89,18 @@ This evaluate the first split webpages.
 ./run_attack_other.sh train_folder test_folder log_dir
 ```
 This evaluate the other split webpages.
+
+## Split decision 
+Go to "attacks/decision" 
+```
+python3 run_attack.py -train trainset -test testset -num l
+```
+This corresponds to split decision process.       
+It will generate a ".npy" file telling the prediction of l of all l-traces in testset.       
+"-num" indicates this testset contains traces of length l.       
+trainset contains l-traces of different l; testset only contains traces of the same l.         
+
+
 
 
 ## Versioning
