@@ -1,7 +1,7 @@
 # Website Fingerprinting attack and defense codes. 
 ## Folder structure
     .
-    ├── attacks  #Wf attacks                     
+    ├── attacks  #WF attacks                     
         ├── kfingerprinting: kFP using Random Forest 
         ├── cumul : CUMUL using SVM
         ├── knn: kNN using k Nearest Neighbor  
