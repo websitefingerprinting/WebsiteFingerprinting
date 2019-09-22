@@ -25,7 +25,7 @@ def extract(times, sizes):
     #Transmission size,time, outgoing pkt num features: 3#
     features.append(len(sizes))
     features.append(times[-1] - times[0])
-    features.append( (sizes == 1).sum())
+    features.append( (sizes > 0).sum())
     
     nexttimes = times[1:]
     nexttimes = np.append(nexttimes, times[0])
@@ -79,7 +79,7 @@ def extract(times, sizes):
         
 def init_logger():
     logger = logging.getLogger('decision')
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     # create console handler and set level to debug
     ch = logging.StreamHandler()
     # create formatter
@@ -97,7 +97,7 @@ def parallel(flist,n_jobs = 20):
     return features
 
 def work(file):
-    logger.info("Processing file {}".format(file))
+    logger.debug("Processing file {}".format(file))
     with open(file,'r') as f:
         f = f.readlines()
     df = pd.Series(f)
@@ -149,4 +149,4 @@ if __name__== '__main__':
     outputdir = const.featuredir+args.traces_path.split('/')[-2]
     np.save(outputdir,data_dict)        
 
-    logger.info('Save to %s.npy'%outputdir)
+    logger.debug('Save to %s.npy'%outputdir)

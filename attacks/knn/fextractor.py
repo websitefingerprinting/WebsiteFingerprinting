@@ -155,9 +155,9 @@ flist = []
 fold = d["DATA_LOC"]+ data_name+'/'
 for s in range(0, d["CLOSED_SITENUM"]):
     for i in range(0, d["CLOSED_INSTNUM"]):
-        flist.append("{}{}-{}".format(fold, s, i))
+        flist.append("{}{}-{}.cell".format(fold, s, i))
 for i in range(0, d["OPEN_INSTNUM"]):
-    flist.append("{}{}".format(fold, i))
+    flist.append("{}{}.cell".format(fold, i))
 
 if(not os.path.isdir(d['OUTPUT_LOC'])):
     os.mkdir(d['OUTPUT_LOC'])
@@ -165,7 +165,7 @@ if(not os.path.isdir(d['OUTPUT_LOC'])):
 for fname in flist:
     # if "-0.cell" in fname:
     #     print fname
-    tname = fname.split('/')[-1] + ".cellkNN"
+    tname = fname.split('/')[-1].split(".")[0] + ".cellkNN"
  
 
     #load up times, sizes

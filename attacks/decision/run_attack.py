@@ -59,19 +59,19 @@ if __name__ == '__main__':
 
 
     if os.path.exists(trainfeaturepath):
-        logger.info("skip train set extraction")
+        logger.debug("skip train set extraction")
     else:
-        logger.info(call("python3 extract.py "+args.train, shell = True))
+        logger.debug(call("python3 extract.py "+args.train, shell = True))
     if os.path.exists(testfeaturepath):
-        logger.info("skip test set extraction")
+        logger.debug("skip test set extraction")
     else:
-        logger.info(call("python3 extract.py "+args.test +" -num "+ args.num, shell = True))
+        logger.debug(call("python3 extract.py "+args.test +" -num "+ args.num, shell = True))
 
 
     if os.path.exists(modelpath):
-        logger.info("skip train model")
+        logger.debug("skip train model")
     else:
-        logger.info(call("python3 train.py " +trainfeaturepath, shell = True))
+        logger.debug(call("python3 train.py " +trainfeaturepath, shell = True))
 
     logger.info(call("python3 evaluate.py "+testfeaturepath + " -m "+modelpath, shell = True))
 

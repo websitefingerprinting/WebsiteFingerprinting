@@ -1,42 +1,42 @@
 import subprocess
 
 
-name = "../../defense/results/mergepad_0131_"
+name = "../../defense/results/ranpad2_0610_"
 targets = [
-	name+'1728/',
-	name+'1840/',
-	name+'1843/',
-	name+'1858/',
-	name+'1859/',
-	name+'1901/',
-	name+'1902/',
-	name+'1903/',
-	name+'1904/',
-	name+'1905/',
-	name+'1906/',
-	name+'1907/',
-	name+'1908/',
-	name+'1909/',
-	name+'1910/',
+name + "1951/",
+name + "1952/",
+name + "1953/",
+name + "1954/",
+name + "1955/",
+name + "1956/",
+name + "1958/",
+name + "1959/",
+name + "2001/",
+name + "2004/",
+name + "2006/",
+name + "2008/",
+name + "2010/",
+name + "2013/",
+name + "2016/",
 ] 
 
-splitfolder = "../xgboost/scores/mergepad_0131_"
+splitfolder = "../xgboost/scores/ranpad2_0610_"
 splits = [
-	splitfolder+'1728/splitresult.txt',
-	splitfolder+'1840/splitresult.txt',
-	splitfolder+'1843/splitresult.txt',
-	splitfolder+'1858/splitresult.txt',
-	splitfolder+'1859/splitresult.txt',
-	splitfolder+'1901/splitresult.txt',
-	splitfolder+'1902/splitresult.txt',
-	splitfolder+'1903/splitresult.txt',
-	splitfolder+'1904/splitresult.txt',
-	splitfolder+'1905/splitresult.txt',
-	splitfolder+'1906/splitresult.txt',
-	splitfolder+'1907/splitresult.txt',
-	splitfolder+'1908/splitresult.txt',
-	splitfolder+'1909/splitresult.txt',
-	splitfolder+'1910/splitresult.txt',
+	splitfolder+'1951/splitresult.txt',
+	splitfolder+'1952/splitresult.txt',
+	splitfolder+'1953/splitresult.txt',
+	splitfolder+'1954/splitresult.txt',
+	splitfolder+'1955/splitresult.txt',
+	splitfolder+'1956/splitresult.txt',
+	splitfolder+'1958/splitresult.txt',
+	splitfolder+'1959/splitresult.txt',
+	splitfolder+'2001/splitresult.txt',
+	splitfolder+'2004/splitresult.txt',
+	splitfolder+'2006/splitresult.txt',
+	splitfolder+'2008/splitresult.txt',
+	splitfolder+'2010/splitresult.txt',
+	splitfolder+'2013/splitresult.txt',
+	splitfolder+'2016/splitresult.txt',
 ] 
 
 for target,split in zip(targets, splits):

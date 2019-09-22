@@ -6,7 +6,7 @@ from os.path import join, abspath, dirname, pardir
 import os
 from pprint import pprint
 # BASE_DIR = join(abspath(join(dirname(__file__), pardir)),'randomknn2/randomresults')
-pattern = re.compile(r"\s*(?P<tp>\d+)\s+(?P<wp>\d+)\s+(?P<fp>\d+)\s+900\s+900\s*")
+pattern = re.compile(r"\s*(?P<tp>\d+)\s+(?P<wp>\d+)\s+(?P<fp>\d+)\s+1000\s+1000\s*")
 dic = defaultdict(list)
 
 def init_logger():
@@ -59,4 +59,4 @@ if __name__ == '__main__':
             logging.info("No match")
     if cnt != 10:
         raise Error('Bad parser!')
-    print(sum(dic["tp"]), sum(dic["wp"]), sum(dic["fp"]), 9000 , 9000)
+    print(sum(dic["tp"]), sum(dic["wp"]), sum(dic["fp"]), 10000 , 10000)

@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Created on Sat Nov 10 16:28:28 2018
 
+@author: aaron
+"""
 from main import *
 logger = logging.getLogger('cumul')
 
@@ -49,7 +53,7 @@ def score_func(ground_truths, predictions):
                 else:
                     fp += 1
                     # logger.info('False positive:%d %d'%(truth, prediction))
-    logger.info('{} {} {} {} {}'.format(tp, wp, fp, p, n))
+    print('{} {} {} {} {}'.format(tp, wp, fp, p, n))
     try:
         r_precision = tp*n / (tp*n+wp*n+r*p*fp)
     except:

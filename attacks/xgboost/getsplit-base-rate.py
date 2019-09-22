@@ -97,7 +97,7 @@ def GetSplit(scorefile, num_of_splits = None):
     
 if __name__ == '__main__':
     args = parse_arguments()
-    logger.info(args)
+    logger.debug(args)
     scoresfile = glob.glob(join(args.p,'*-score.npy'))
     scoresfile.sort(key=lambda d:int(d.split('/')[-1].split('-')[0]))
     

@@ -3,6 +3,7 @@
 """
 This is for experiment: random number of splits
 
+@author: aaron
 """
 from main import *
 import glob 

@@ -117,7 +117,7 @@ def get_truesplit(times, directions):
         # if (abs(int(directions[i])) < 888 and (   abs(int(directions[i])) != abs(int(directions[i-1])))    ):
         #     truesplits.append(i)
         
-    print("truesplits", truesplits)
+    # print("truesplits", truesplits)
     # f1count = 0
     # f2count = 0
     # for i in range(0, len(directions)):
@@ -166,7 +166,7 @@ def work(file):
     f = file[0]
     testfolder = file[1]
     fname = f.split('/')[-1].split(".")[0]    
-    logger.info('extract feature for file {}'.format(f))
+    logger.debug('extract feature for file {}'.format(f))
     times = []
     directions = []
     badfile = 0
@@ -196,7 +196,7 @@ def work(file):
 
 if __name__ == '__main__':
     args = parse_arguments()
-    logger.info("Arguments: %s" % (args))
+    logger.debug("Arguments: %s" % (args))
     if args.mode == 'test':
         tmp = args.t.split('/')[-2]
         testfolder = os.path.join(ct.outputdir, tmp)
@@ -244,7 +244,7 @@ if __name__ == '__main__':
         data_dict = {'feature':[],'label':[]}
 
         for infile in flist:
-            logger.info('Processing file {}'.format(infile))
+            logger.debug('Processing file {}'.format(infile))
             '''1000 controls how much training data are used'''
             badfile = 0
             times = []
@@ -258,7 +258,7 @@ if __name__ == '__main__':
 
             #if the file is really bad don't bother
             truesplits = get_truesplit(times, directions)
-            logging.info('True split is {}'.format(truesplits))
+            logging.debug('True split is {}'.format(truesplits))
 
             if (badfile == 0 and truesplits != None):
                 gb = [[], []]
@@ -284,9 +284,9 @@ if __name__ == '__main__':
                         extract(features, x, times, directions)
                         data_dict['feature'].append(features)
                         data_dict['label'].append(gbi)
-        logger.info("Training set shape:{}".format(np.array(data_dict['feature']).shape))
+        logger.debug("Training set shape:{}".format(np.array(data_dict['feature']).shape))
         outputdir = ct.outputdir+args.t.split('/')[-2]
         np.save(outputdir,data_dict)
-        logger.info("Training set is saved to {}".format(outputdir))
+        logger.debug("Training set is saved to {}".format(outputdir))
     else:
         logger.error('Wrong mode:{}'.format(args.mode))

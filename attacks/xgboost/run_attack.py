@@ -63,23 +63,23 @@ if __name__ == '__main__':
     scorepath = join('./scores/', testname+'/')
 
     if os.path.exists(trainfeaturepath):
-        logger.info("skip train set extraction")
+        logger.debug("skip train set extraction")
     else:
-        logger.info(call("python3 extract.py -mode train "+args.train, shell = True))
-    logger.info(call("python3 extract.py -mode test "+args.test, shell = True))
+        call("python3 extract.py -mode train "+args.train, shell = True)
+    call("python3 extract.py -mode test "+args.test, shell = True)
 
 
     if os.path.exists(modelpath):
-        logger.info("skip train model")
+        logger.debug("skip train model")
     else:
-        logger.info(call("python3 main.py -mode train " +trainfeaturepath, shell = True))
-    logger.info(call("python3 main.py -mode test -model "+modelpath +" "+testfeaturepath, shell = True))
+        call("python3 main.py -mode train " +trainfeaturepath, shell = True)
+    call("python3 main.py -mode test -model "+modelpath +" "+testfeaturepath, shell = True)
 
     if args.mode == 'finding':
-        logger.info(call("python3 getsplit-base-rate.py "+ scorepath, shell = True))
+        call("python3 getsplit-base-rate.py "+ scorepath, shell = True)
     elif args.mode == 'decision':
         kdir = args.kdir
-        logger.info(call("python3 getsplit-base-rate.py "+ scorepath +" -k "+ kdir , shell = True))
+        call("python3 getsplit-base-rate.py "+ scorepath +" -k "+ kdir , shell = True)
 
     else:
         logger.warn("Wrong mode {}!!".format(args.mode))

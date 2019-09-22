@@ -35,10 +35,10 @@ logger = logging.getLogger('cumul')
 random.seed(1123)
 np.random.seed(1123)
 '''params'''
-r = 1000
+r = 10
 
 def score_func(ground_truths, predictions):
-    global MON_SITE_NUM
+    global MON_SITE_NUM, tps, wps, fps, ps, ns, flag 
     tp, wp, fp, p, n = 0, 0, 0, 0 ,0
     for truth,prediction in zip(ground_truths, predictions):
         if truth != MON_SITE_NUM:
@@ -55,7 +55,13 @@ def score_func(ground_truths, predictions):
                 else:
                     fp += 1
                     # logger.info('False positive:%d %d'%(truth, prediction))
-    logger.info('%4d %4d %4d %4d %4d'%(tp, wp, fp, p, n))
+    # logger.info('%4d %4d %4d %4d %4d'%(tp, wp, fp, p, n))
+    if flag:
+        tps += tp
+        wps += wp
+        fps += fp
+        ps += p
+        ns += n
     try:
         r_precision = tp*n / (tp*n+wp*n+r*p*fp)
     except:
@@ -119,7 +125,7 @@ def GridSearch(train_X,train_Y):
     # clf = GridSearchCV(estimator = SVC(kernel = 'rbf'), param_grid = param_grid, \
     #     scoring = 'accuracy', cv = 10, verbose = 2, n_jobs = -1)
     clf = GridSearchCV(estimator = SVC(kernel = 'rbf'), param_grid = param_grid, \
-        scoring = my_scorer, cv = 5, verbose = 1, n_jobs = -1)
+        scoring = my_scorer, cv = 5, verbose = 0, n_jobs = -1)
     clf.fit(train_X, train_Y)
     # logger.info('Best estimator:%s'%clf.best_estimator_)
     # logger.info('Best_score_:%s'%clf.best_score_)
@@ -127,15 +133,18 @@ def GridSearch(train_X,train_Y):
 
 
 if __name__ == '__main__':
-    global MON_SITE_NUM
+    global MON_SITE_NUM, tps, wps, fps, ps, ns, flag
+    tps, wps, fps, ps, ns = 0,0,0,0,0
+    flag = 0
+
     args = parse_arguments()
-    logger.info("Arguments: %s" % (args))
+    # logger.info("Arguments: %s" % (args))
 
     cf = read_conf(ct.confdir)
     MON_SITE_NUM = int(cf['monitored_site_num'])
 
 
-    logger.info('loading data...')
+    # logger.info('loading data...')
     dic = np.load(args.fp).item()   
     X = np.array(dic['feature'])
     y = np.array(dic['label'])
@@ -144,10 +153,10 @@ if __name__ == '__main__':
     #normalize the data
     scaler = preprocessing.MinMaxScaler((-1,1))
     X = scaler.fit_transform(X)  
-    logger.info('data are transformed into [-1,1]')
+    # logger.info('data are transformed into [-1,1]')
 
     # find the optimal params
-    logger.info('GridSearchCV...')
+    # logger.info('GridSearchCV...')
     clf = GridSearch(X,y)
 
    
@@ -155,13 +164,14 @@ if __name__ == '__main__':
     gamma = clf.best_params_['gamma']
     # C, gamma = 131072, 8.000000
     # C, gamma = 8192, 8.00
-    logger.info('Best params are: %d %f'%(C,gamma))
+    # logger.info('Best params are: %d %f'%(C,gamma))
 
 
     # sss = StratifiedShuffleSplit(n_splits=10, test_size=0.1, random_state=0)
-    # ps,nps,tps,wps,fps = 0,0,0,0,0
+    
 
     # folder_num = 0
+    # flag = 1 
     # for train_index, test_index in sss.split(X,y):
     #     # logger.info('Testing fold %d'%folder_num)
     #     folder_num += 1
@@ -174,9 +184,11 @@ if __name__ == '__main__':
     #     r_precision = score_func(y_test, y_pred)
     #     # logger.info('%d-presicion is %.4f'%(r, r_precision))
 
+    # print("%d %d %d %d %d"%(tps,wps,fps,ps,ns))
+
 
     model = SVC(C = C, gamma = gamma, kernel = 'rbf')
     model.fit(X, y)
-    joblib.dump(model, 'ranpad2_0131_1719.pkl')
+    joblib.dump(model, 'ranpad2_0610_2057_norm.pkl')
     print('model have been saved')
 

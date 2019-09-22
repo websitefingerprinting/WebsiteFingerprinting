@@ -147,7 +147,7 @@ def parallel(flist,n_jobs = 20):
 
 
 def extractfeature(f, MON_SITE_NUM = 100):
-    fname = f.split('/')[-1]
+    fname = f.split('/')[-1].split(".")[0]
     # logger.info('Processing %s...'%f)
     features = extract(parse(f))
     if '-' in fname:
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     else:
         OPEN_WORLD = 0
 
-    logger.info('Extracting features...')
+    # logger.info('Extracting features...')
     data_dict = {'feature':[],'label':[]}
     
     fpath = os.path.join(args.t, '*/*')

@@ -1,10 +1,7 @@
 import subprocess
 from os.path import join
 
-
-prefix = "scores/"
-# name = "scores/mergepad_0131_"
-targets = [
+tests = [
 "ranpad2_0610_1951/",
 "ranpad2_0610_1952/",
 "ranpad2_0610_1953/",
@@ -20,12 +17,15 @@ targets = [
 "ranpad2_0610_2010/",
 "ranpad2_0610_2013/",
 "ranpad2_0610_2016/",
-
 ] 
 
+prefix = "../../defense/results/"
 
-for target in targets:
-	target = join(prefix, target)
-	kdir = join("../decision/results/", target.split('/')[-2]+ ".npy")
-	cmd = "python3 getsplit-base-rate.py "+ target + " -k "+ kdir
+
+
+train = "../../defense/results/mergepad_0603_1908/"
+
+for test in tests:
+	test = join(prefix, test)
+	cmd = "python3 run_attack.py -train "+train + " -test "+ test
 	subprocess.call(cmd, shell= True)

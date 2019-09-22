@@ -18,6 +18,7 @@ import pandas as pd
 random.seed(1123)
 np.random.seed(1123)
 
+max_num = 20
 
 def init_logger():
     logger = logging.getLogger('decision')
@@ -44,22 +45,22 @@ if __name__ == '__main__':
                         metavar='<path of model>',
                         help='Path to the directory of the test extracted features')
     args = parser.parse_args()
-    logger.info('loading model...')
+    # logger.info('loading model...')
     model =  joblib.load(args.m)  
 
-    logger.info('loading data...')
+    # logger.info('loading data...')
     testname = args.p.split('/')[-1].split('.')[0]
     dic = np.load(args.p).item()   
     X_test = np.array(dic['feature'])
     y_test = np.array(dic['label'])
     # print(np.unique(y_test))
     y_pred = model.predict(X_test)  
-    conf_mat = confusion_matrix(y_test,y_pred,labels=list(range(2-2,17-2)))
-    print("Confusion matrix: \n{}".format(pd.DataFrame(conf_mat, columns = np.arange(2,17))))
-    logger.info("Acc is {:.4f}, relax_acc is {:.4f}".\
+    conf_mat = confusion_matrix(y_test,y_pred,labels=list(range(2-2,max_num+1-2)))
+    # print("Confusion matrix: \n{}".format(pd.DataFrame(conf_mat, columns = np.arange(2,max_num+1))))
+    logger.info("Acc is {:.4f}, relax_acc is {:.4f}".
         format(relax_acc(conf_mat,0,1)/len(y_test), relax_acc(conf_mat, -2,3)/len(y_test)))
     resultdir = os.path.join(const.outputdir, testname)
     '''Note the output is the number of splits = pages -1,  not pages or   labels = pages -2 '''
     data_dict = {"k": y_pred+1, "conf_mat": conf_mat}
     np.save(resultdir,data_dict)
-    logger.info("K, conf_mat is saved to {}.npy".format(resultdir))
+    logger.debug("K, conf_mat is saved to {}.npy".format(resultdir))

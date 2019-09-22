@@ -3,6 +3,7 @@
 """
 Created on Thu Dec 27 13:13:28 2018
 
+@author: aaron
 """
 import time
 import random
@@ -70,19 +71,19 @@ def parse_arguments():
 if __name__ == '__main__':
     args = parse_arguments()
     if args.mode == 'train':
-        logger.info('loading data...')
+        logger.debug('loading data...')
         dic = np.load(args.t).item()   
         X = np.array(dic['feature'])
         y = np.array(dic['label'])        
 
-        logger.info('Training...')
-        logger.info("Training data shape: {}".format(X.shape))
+        logger.debug('Training...')
+        logger.debug("Training data shape: {}".format(X.shape))
         t = time.time()
         
         model = XGBClassifier()
         model.fit(X,y)
-        logger.info("trainin time is {:.4f} s".format((time.time()-t)))
-        logger.info(model)
+        logger.debug("trainin time is {:.4f} s".format((time.time()-t)))
+        logger.debug(model)
         model_path = os.path.join( ct.modeldir, args.t.split('/')[-1].split('.')[0]) +'.pkl'
         joblib.dump(model, model_path)
     elif args.mode == 'test':
@@ -93,11 +94,11 @@ if __name__ == '__main__':
             tmp = os.path.join(args.t, '*.npy')
             flist = glob.glob(tmp)
             testfolder = os.path.join(ct.scoredir,args.t.split('/')[-2])
-            print("testfolder:",testfolder)
+            # print("testfolder:",testfolder)
             if not os.path.exists(testfolder):
                 makedirs(testfolder)           
             for f in flist:
-                logger.info('Processing {}'.format(f))
+                logger.debug('Processing {}'.format(f))
                 fname = f.split('/')[-1].split('.')[0]
                 dic = np.load(f).item()   
                 X = np.array(dic['feature'])

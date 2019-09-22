@@ -147,7 +147,7 @@ def parallel(flist,n_jobs = 20):
 
 
 def extractfeature(f):
-    fname = f.split('/')[-1]
+    fname = f.split('/')[-1].split(".")[0]
     # logger.info('Processing %s...'%f)
     try:
         features = extract(parse(f))
