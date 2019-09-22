@@ -1,8 +1,10 @@
-# Website Fingerprinting attack and defense codes. 
+# Website Fingerprinting attack and defense codes in Python. 
+
 ## Folder structure
     .
     ├── attacks  #WF attacks                     
         ├── kfingerprinting: kFP using Random Forest 
+        ├── df: Deep Fingerprinting        
         ├── cumul : CUMUL using SVM
         ├── knn: kNN using k Nearest Neighbor  
         ├── decision: Split decision using Random Forest (Used for evaluating Glue) 
@@ -49,7 +51,7 @@ mode: fix -> all traces are m length; random -> length is randomly chosen from (
 Generate 4000 noisy 2-traces with base rate 1   
 
 
-## Run kFP or CUMUL attack
+## Run kFP or CUMUL or DF attack
 Go to an attack folder
 
 To evaluate FRONT, 
@@ -117,10 +119,12 @@ For most of the codes, they use Python3 as default. Except for kNN codes.
 ## Authors
 ---
 
+This is only for research purpose. The codes may not be written in a good way. Sorry for that. 
 
 ## Acknowledgments
 Some of the codes are based on the following works. We thank respective authors for being kind to share their code:  
 [1] Wang et al., "Effective Attacks and Provable Defenses for Website Fingerprinting": https://www.cse.ust.hk/~taow/wf/  
 [2] Juarez et al., "Toward an Efficient Website Fingerprinting Defense": https://github.com/wtfpad/wtfpad       
-[3] Hayes and Danezis, "k-fingerprinting: a Robust Scalable Website Fingerprinting Technique": https://github.com/jhayes14/k-FP      
+[3] Hayes and Danezis, "k-fingerprinting: a Robust Scalable Website Fingerprinting Technique": https://github.com/jhayes14/k-FP    
+[4] Payap Sirinam et al., "Deep Fingerprinting: Undermining Website Fingerprinting Defenses with Deep Learning": https://github.com/deep-fingerprinting/df
 
