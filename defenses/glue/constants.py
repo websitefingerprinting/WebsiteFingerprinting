@@ -5,7 +5,7 @@ BASE_DIR = abspath(join(dirname(__file__), pardir))
 RESULTS_DIR = join(BASE_DIR, "results")
 
 # Files
-CONFIG_FILE = join(BASE_DIR+'/glue', 'config.ini')
+CONFIG_FILE = join(BASE_DIR+'/mergepad', 'config.ini')
 
 # Logging format
 LOG_FORMAT = "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"

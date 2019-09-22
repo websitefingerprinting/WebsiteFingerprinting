@@ -1,7 +1,7 @@
 #for all attacks
 OPEN	1
-DATA_LOC	/Users/aaron/WF/data/
-OUTPUT_LOC	/Users/aaron/WF/attacks/knn/output/
+DATA_LOC	/Users/aaron/websiteFingerprinting/data/
+OUTPUT_LOC	/Users/aaron/websiteFingerprinting/attack/knn/output/
 
 
 #for gen-list

@@ -388,8 +388,8 @@ def parallel(flist,n_jobs = 20):
     data_dict = pool.map(extractfeature, flist)
     return data_dict
 
-def extractfeature(f, MON_SITE_NUM = 10):
-    fname = f.split('/')[-1]
+def extractfeature(f, MON_SITE_NUM = 100):
+    fname = f.split('/')[-1].split(".")[0]
     # logger.info('Processing %s...'%fname)
     try:
         with open(f,'r') as f:
@@ -485,6 +485,6 @@ if __name__== '__main__':
     outputdir = const.outputdir+args.traces_path.split('/')[-2]
     np.save(outputdir,data_dict)        
 
-    logger.info('Save to %s'%outputdir)
+    # logger.info('Save to %s.npy'%outputdir)
 
 

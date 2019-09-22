@@ -3,6 +3,7 @@
 """
 This is for experiment: random number of splits
 
+@author: aaron
 """
 from main import *
 import const as ct
@@ -100,7 +101,7 @@ def get_single_neighbor(testleaf):
     trainleaf, trainlabel = list(zip(*trainleaves))[0], list(zip(*trainleaves))[1]
     trainleaf = np.array(trainleaf)
     trainlabel = np.array(trainlabel)
-    atile = np.tile(testleaf[0], (trainleaf.shape[0],1))
+    atile = np.tile(testleaf, (trainleaf.shape[0],1))
     dists = np.sum(atile != trainleaf, axis = 1)
     k_neighbors = trainlabel[np.argsort(dists)[:K]]
     if len(set(k_neighbors)) == 1:

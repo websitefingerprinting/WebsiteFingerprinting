@@ -388,15 +388,15 @@ def parallel(flist,n_jobs = 20):
     return data_dict
 
 def extractfeature(f):
-    fname = f.split('/')[-1]
+    fname = f.split('/')[-1].split(".")[0]
     # logger.info('Processing %s...'%f)
     try:
         with open(f,'r') as f:
             tcp_dump = f.readlines()
         feature = TOTAL_FEATURES(tcp_dump)
     except:
-        print("Bad file")
-        print(f)
+        # print("Bad file")
+        # print(f)
         feature = [0]*175
     if '-' in fname:
         label = fname.split('-')

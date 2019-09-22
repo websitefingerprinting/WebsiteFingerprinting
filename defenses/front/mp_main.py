@@ -15,7 +15,7 @@ import configparser
 import time
 import datetime
 from pprint import pprint
-logger = logging.getLogger('front')
+logger = logging.getLogger('ranpad2')
 def init_directories():
     # Create a results dir if it doesn't exist yet
     if not os.path.exists(ct.RESULTS_DIR):
@@ -24,8 +24,11 @@ def init_directories():
     # Define output directory
     timestamp = strftime('%m%d_%H%M')
     output_dir = join(ct.RESULTS_DIR, 'ranpad2_'+timestamp)
-    makedirs(output_dir)
+    while os.path.exists(output_dir):
+        timestamp = strftime('%m%d_%H%M')
+        output_dir = join(ct.RESULTS_DIR, 'ranpad2_'+timestamp)
 
+    makedirs(output_dir)
     return output_dir
 def config_logger(args):
     # Set file
@@ -54,7 +57,7 @@ def parse_arguments():
                         help='Path to the directory with the traffic traces to be simulated.')
     parser.add_argument('-format',
                         metavar='<suffix of a file>',
-                        default = '',
+                        default = '.merge',
                         help='suffix of a file.')
     parser.add_argument('-c', '--config',
                         dest="section",
@@ -131,12 +134,13 @@ def RP(trace):
     # print("last_pkt_time",last_pkt_time)    
     
     client_timetable = getTimestamps(client_wnd, client_dummy_pkt)
-    client_timetable = start_padding_time+client_timetable[np.where(client_timetable[:,0] <= last_pkt_time)]
+    client_timetable = client_timetable[np.where(start_padding_time+client_timetable[:,0] <= last_pkt_time)]
 
     server_timetable = getTimestamps(server_wnd, server_dummy_pkt)
-    server_timetable = start_padding_time+ server_timetable[np.where(server_timetable[:,0] <= last_pkt_time)]
-
     server_timetable[:,0] += first_incoming_pkt_time
+    server_timetable =  server_timetable[np.where(start_padding_time+server_timetable[:,0] <= last_pkt_time)]
+
+    
     # print("client_timetable")
     # print(client_timetable[:10])
     client_pkts = np.concatenate((client_timetable, 888*np.ones((len(client_timetable),1))),axis = 1)
@@ -148,7 +152,8 @@ def RP(trace):
     return noisy_trace
 
 def getTimestamps(wnd, num):
-    timestamps = sorted(np.random.exponential(wnd/2.0, num))
+    # timestamps = sorted(np.random.exponential(wnd/2.0, num))
+    timestamps = sorted(np.random.rayleigh(wnd,num))
     # print(timestamps[:5])
     # timestamps = np.fromiter(map(lambda x: x if x <= wnd else wnd, timestamps),dtype = float)
     return np.reshape(timestamps, (len(timestamps),1))
@@ -168,7 +173,7 @@ if __name__ == '__main__':
     global min_wnd 
     global start_padding_time
     args, config = parse_arguments()
-    logger.info(args)
+    # logger.info(args)
 
     client_min_dummy_pkt_num = int(config.get('client_min_dummy_pkt_num',1))
     server_min_dummy_pkt_num = int(config.get('server_min_dummy_pkt_num',1))
@@ -180,11 +185,11 @@ if __name__ == '__main__':
     MON_SITE_NUM = int(config.get('mon_site_num', 10))
     MON_INST_NUM = int(config.get('mon_inst_num', 10))
     UNMON_SITE_NUM = int(config.get('unmon_site_num', 100))
-    print("client_min_dummy_pkt_num:{}".format(client_min_dummy_pkt_num))
-    print("server_min_dummy_pkt_num:{}".format(server_min_dummy_pkt_num))
-    print("client_dummy_pkt_num: {}\nserver_dummy_pkt_num: {}".format(client_dummy_pkt_num,server_dummy_pkt_num))
-    print("max_wnd: {}\nmin_wnd: {}".format(max_wnd,min_wnd))
-    print("start_padding_time:", start_padding_time)
+    # print("client_min_dummy_pkt_num:{}".format(client_min_dummy_pkt_num))
+    # print("server_min_dummy_pkt_num:{}".format(server_min_dummy_pkt_num))
+    # print("client_dummy_pkt_num: {}\nserver_dummy_pkt_num: {}".format(client_dummy_pkt_num,server_dummy_pkt_num))
+    # print("max_wnd: {}\nmin_wnd: {}".format(max_wnd,min_wnd))
+    # print("start_padding_time:", start_padding_time)
     flist  = []
     for i in range(MON_SITE_NUM):
         for j in range(MON_INST_NUM):
@@ -203,4 +208,4 @@ if __name__ == '__main__':
     #     simulate(f)
 
     parallel(flist)
-    logger.info("Time: {}".format(time.time()-start))
+    # logger.info("Time: {}".format(time.time()-start))

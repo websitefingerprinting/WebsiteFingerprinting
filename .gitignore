@@ -2,3 +2,6 @@
 __pycache__
 
 defenses/results/
+*.pyc
+df_train.sh
+attacks/df/log

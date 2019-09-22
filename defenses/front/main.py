@@ -14,7 +14,7 @@ import configparser
 import time
 import datetime
 from pprint import pprint
-logger = logging.getLogger('front')
+logger = logging.getLogger('ranpad2')
 def init_directories():
     # Create a results dir if it doesn't exist yet
     if not os.path.exists(ct.RESULTS_DIR):
@@ -128,12 +128,13 @@ def RP(trace):
     last_pkt_time = trace[-1][0]    
     
     client_timetable = getTimestamps(client_wnd, client_dummy_pkt)
-    client_timetable = start_padding_time+client_timetable[np.where(client_timetable[:,0] <= last_pkt_time)]
+    client_timetable = client_timetable[np.where(start_padding_time+client_timetable[:,0] <= last_pkt_time)]
 
     server_timetable = getTimestamps(server_wnd, server_dummy_pkt)
-    server_timetable = start_padding_time+ server_timetable[np.where(server_timetable[:,0] <= last_pkt_time)]
-
     server_timetable[:,0] += first_incoming_pkt_time
+    server_timetable = server_timetable[np.where(start_padding_time+server_timetable[:,0] <= last_pkt_time)]
+
+    
     # print("client_timetable")
     # print(client_timetable[:10])
     client_pkts = np.concatenate((client_timetable, 888*np.ones((len(client_timetable),1))),axis = 1)
@@ -145,7 +146,10 @@ def RP(trace):
     return noisy_trace
 
 def getTimestamps(wnd, num):
-    timestamps = sorted(np.random.exponential(wnd/2.0, num))
+    # timestamps = sorted(np.random.exponential(wnd/2.0, num))   
+    # print(wnd, num)
+    # timestamps = sorted(abs(np.random.normal(0, wnd, num)))
+    timestamps = sorted(np.random.rayleigh(wnd,num))
     # print(timestamps[:5])
     # timestamps = np.fromiter(map(lambda x: x if x <= wnd else wnd, timestamps),dtype = float)
     return np.reshape(timestamps, (len(timestamps),1))
