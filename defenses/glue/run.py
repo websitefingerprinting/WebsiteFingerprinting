@@ -60,9 +60,11 @@ def parse_arguments():
 # else:
 #     logger.error("wrong mode")
 
+data_folder = sys.argv[1]
+
 for m in range(2,17):
     n = 9900 // m 
     # print("m :{}, n: {}".format(m, n))
-    subprocess.call("python3 main-base-rate.py ../../data/evaluation/ -n "+ str(n)+" -m "+str(m)+ " -b 10 -noise True -mode fix", shell = True)
+    subprocess.call("python3 main-base-rate.py "+data_folder+" -n "+ str(n)+" -m "+str(m)+ " -b 10 -noise True -mode fix", shell = True)
 
 
