@@ -37,7 +37,7 @@ python3 main.py ../../data/tor/
 This generates a dataset into results/ folder using FRONT defense.
 
 ```
-python3 mp-main.py ../results/glued_trace/ -format ".merge"
+python3 mp_main.py ../results/glued_trace/ -format ".merge"
 ```
 This adds front noise to l-traces defended by Glue
 
