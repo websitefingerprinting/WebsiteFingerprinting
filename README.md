@@ -43,7 +43,7 @@ This adds front noise to l-traces defended by Glue
 
 ### Run Glue
 ```
-python3 main.py ../../data/tor2-5-1/ -n 4000 -b 1 -m 2 -noise True -mode fix
+python3 run.py ../../data/tor2-5-1/ -n 4000 -b 1 -m 2 -noise True -mode fix
 ```
 n: number of l-traces; m: l; b: base rate; noise: add noise or not; 
 mode: fix -> all traces are m length; random -> length is randomly chosen from (2, m)
