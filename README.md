@@ -128,3 +128,5 @@ Some of the codes are based on the following works. We thank respective authors 
 [3] Hayes and Danezis, "k-fingerprinting: a Robust Scalable Website Fingerprinting Technique": https://github.com/jhayes14/k-FP    
 [4] Payap Sirinam et al., "Deep Fingerprinting: Undermining Website Fingerprinting Defenses with Deep Learning": https://github.com/deep-fingerprinting/df
 
+
+[![Anurag's github stats](https://github-readme-stats.vercel.app/api?username=websitefingerprinting)](https://github.com/anuraghazra/github-readme-stats)
