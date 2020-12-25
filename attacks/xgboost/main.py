@@ -17,7 +17,7 @@ import argparse
 from os import makedirs
 import constants as ct
 from xgboost import XGBClassifier
-from sklearn.externals import joblib 
+import joblib
 
 
 
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     args = parse_arguments()
     if args.mode == 'train':
         logger.debug('loading data...')
-        dic = np.load(args.t).item()   
+        dic = np.load(args.t, allow_pickle=True).item()   
         X = np.array(dic['feature'])
         y = np.array(dic['label'])        
 
@@ -100,7 +100,7 @@ if __name__ == '__main__':
             for f in flist:
                 logger.debug('Processing {}'.format(f))
                 fname = f.split('/')[-1].split('.')[0]
-                dic = np.load(f).item()   
+                dic = np.load(f, allow_pickle=True).item()   
                 X = np.array(dic['feature'])
 #                location = np.array(dic['location'])
                 truesplits = dic['truesplits']

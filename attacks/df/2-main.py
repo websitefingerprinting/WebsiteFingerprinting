@@ -1,7 +1,9 @@
 #10-cv deep fingerprinting code
+import gc
 from keras import backend as K
 from keras.utils import np_utils
 from keras.optimizers import Adamax
+from keras.utils import to_categorical
 from model import DFNet
 import numpy as np
 import time
@@ -26,7 +28,7 @@ def read_conf(file):
 
 
 def init_logger():
-    logger = logging.getLogger('kf')
+    logger = logging.getLogger('df')
     logger.setLevel(logging.DEBUG)
     # create console handler and set level to debug
     ch = logging.StreamHandler()
@@ -39,7 +41,7 @@ def init_logger():
     return logger
 
 def loadData(fpath):
-    train = np.load(fpath).item()
+    train = np.load(fpath,allow_pickle=True).item()
     train_X ,train_y = train['feature'], train['label']
     return train_X, train_y
 
@@ -75,26 +77,34 @@ def score_func(ground_truths, predictions):
 if __name__ == "__main__":
     cf = read_conf(const.confdir)
     MON_SITE_NUM = int(cf['monitored_site_num'])
+    MON_INST_NUM = int(cf['monitored_inst_num'])
+    if cf['open_world'] == '1':
+        UNMON_SITE_NUM = int(cf['unmonitored_site_num'])
+        OPEN_WORLD = 1
+    else:
+        OPEN_WORLD = 0
+
     random.seed(0)
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-   
+
     EXP_Type = 'OpenWorld_NoDef'
-    #print ("Experimental Type: ", EXP_Type)
+    # print ("Experimental Type: ", EXP_Type)
     # network and training
     NB_EPOCH = 20
     # print ("Number of Epoch: ", NB_EPOCH)
     BATCH_SIZE = 128
     VERBOSE = 0
     LENGTH = 10000
-    OPTIMIZER = Adamax(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0)
 
-    NB_CLASSES = 100+1 # number of outputs: 95 Monitored websites + 1 Unmonitored websites
+    OPTIMIZER = Adamax(lr=0.002, beta_1=0.9, beta_2=0.999,  decay=0.0)
+
+    NB_CLASSES = 100+OPEN_WORLD# number of outputs: 95 Monitored websites + 1 Unmonitored websites
     INPUT_SHAPE = (LENGTH,1)
 
     '''initialize logger'''
     logger = init_logger()
     '''read config'''
-    parser = argparse.ArgumentParser(description='k-FP attack')
+    parser = argparse.ArgumentParser(description='DF attack')
     parser.add_argument('feature_path',
                         metavar='<feature path>',
                         help='Path to the directory of the extracted features')
@@ -103,18 +113,28 @@ if __name__ == "__main__":
 
 
     X, y = loadData(args.feature_path)
-    K.set_image_dim_ordering("tf") # tf is tensorflow
+    # K.set_image_dim_ordering("tf") # tf is tensorflow
     # consider them as float and normalize
     X = X.astype('float32')
     y = y.astype('float32')
     # print(y_train)
+    #We assume that the input y is 2-D
 
+    if not OPEN_WORLD:
+        tmp_y = y.argmax(axis=1)
+        X = X[tmp_y<MON_SITE_NUM]
+        y = y[tmp_y<MON_SITE_NUM]
+    # print(X.shape,y.shape)
 
     # we need a [Length x 1] x n shape as input to the DFNet (Tensorflow)
-    X = X[:, :,np.newaxis]
-
-
+    if len(X.shape) < 3:
+        X = X[:, :,np.newaxis]
+    if y.shape[1] != NB_CLASSES:
+        # y = y.flatten()
+        y = to_categorical(y.argmax(axis=1), num_classes = NB_CLASSES) 
     # print(X.shape[0], 'data samples')
+
+
 
     sss = StratifiedShuffleSplit(n_splits=10, test_size=0.1, random_state=0)
     tps, wps, fps, ps, ns = 0, 0, 0, 0, 0
@@ -128,7 +148,6 @@ if __name__ == "__main__":
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
         
-        
         # initialize the optimizer and model
         # print (time.sleep(2))
         model = DFNet.build(input_shape=INPUT_SHAPE, classes=NB_CLASSES)
@@ -140,17 +159,25 @@ if __name__ == "__main__":
         # Start training
         history = model.fit(X_train, y_train,
                 batch_size=BATCH_SIZE, epochs=NB_EPOCH, verbose=VERBOSE,validation_split=0.1)
+        # score = model.evaluate(X_test, y_test, verbose=0)
+        # print(score)
 
         y_pred = model.predict(X_test)
         y_pred = np.argmax(y_pred,axis = 1)
         y_test = np.argmax(y_test, axis= 1)
 
+        del history    
+        del model
+        gc.collect()
+        
         tp, wp, fp, p, n = score_func(y_test, y_pred)
         tps += tp
         wps += wp
         fps += fp     
         ps += p
         ns += n  
+
+        # print("{:3d} {:3d} {:3d} {:3d} {:3d}".format(tp, wp, fp, p, n))
     print("{:3d} {:3d} {:3d} {:3d} {:3d}".format(tps, wps, fps, ps, ns))
     # print("time:", time.time()-start_time)
 

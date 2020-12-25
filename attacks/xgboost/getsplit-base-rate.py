@@ -63,7 +63,7 @@ def config_logger(args):
 def GetSplit(scorefile, num_of_splits = None):
     global neighbor
     s = []
-    dic = np.load(scorefile).item()
+    dic = np.load(scorefile, allow_pickle=True).item()
     truesplits = dic['truesplits']
     scores = dic['score'][:,0]
     locations = dic['location']
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     scoresfile.sort(key=lambda d:int(d.split('/')[-1].split('-')[0]))
     
     if args.k != None:
-        total_num_of_splits = np.load(args.k).item()['k']
+        total_num_of_splits = np.load(args.k, allow_pickle=True).item()['k']
 
     acc = 0
     total = [0,0] #left pre, right truth

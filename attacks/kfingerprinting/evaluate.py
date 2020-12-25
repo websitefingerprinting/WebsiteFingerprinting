@@ -1,7 +1,14 @@
-from main import *
+import joblib
+import pickle
 import const as ct
 import logging
+import argparse
+import configparser
+import numpy as np
+import multiprocessing
+
 logger = logging.getLogger('kf')
+
 #def init_logger():
 #    logger = logging.getLogger('kf')
 #    logger.setLevel(logging.DEBUG)
@@ -47,7 +54,7 @@ def init_logger():
     # create console handler and set level to debug
     ch = logging.StreamHandler()
     # create formatter
-    formatter = logging.Formatter(const.LOG_FORMAT)
+    formatter = logging.Formatter(ct.LOG_FORMAT)
     # add formatter to ch
     ch.setFormatter(formatter)
     # add ch to logger
@@ -104,7 +111,7 @@ def get_single_neighbor(testleaf):
 #         guessclasses.append(trainleaves[i[0]][1])
 #     return [testleaf[1],guessclasses]
 
-def parallel_get_neighbors(traindata,testdata, MAX_K,n_jobs = 15):
+def parallel_get_neighbors(traindata, testdata, MAX_K, n_jobs = 15):
     global trainleaves, K
     K = MAX_K
     trainleaves = list(traindata)
@@ -171,10 +178,10 @@ if __name__ == '__main__':
     MON_SITE_NUM = int(cf['monitored_site_num'])
     # logger.info('loading model...')
     model =  joblib.load(args.m)
-    train_leaf = np.load(args.o).item()
+    train_leaf = np.load(args.o, allow_pickle=True).item()
     
     # logger.info('loading data...')
-    dic = np.load(args.p).item()   
+    dic = np.load(args.p, allow_pickle=True).item()   
     X_test = np.array(dic['feature'])
     y_test = np.array(dic['label'])
     y_test = np.array([label[0] for label in y_test])
@@ -182,7 +189,7 @@ if __name__ == '__main__':
     # logger.info('getting test_leaf...')
     test_leaf= zip(model.apply(X_test), y_test)
     reports = []
-    neighbors = parallel_get_neighbors(train_leaf, test_leaf,3, 40)
+    neighbors = parallel_get_neighbors(train_leaf, test_leaf,3, 20)
     tp,wp,fp,p,n = open_world_acc(neighbors,MON_SITE_NUM)
     reports.append(( tp,wp,fp,p,n))
     for report in reports:

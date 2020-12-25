@@ -112,7 +112,7 @@ if __name__ == '__main__':
     model = load_model(args.m)
 
     # logger.info('loading test data...')
-    dic = np.load(args.p).item()   
+    dic = np.load(args.p, allow_pickle=True).item()
     X = np.array(dic['feature'])
     y = np.array(dic['label'])
     if y.shape[-1] > 1:

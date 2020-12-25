@@ -57,7 +57,8 @@ def extractfeature(f):
 #        raise ValueError("..")
     with open(f,'r') as f:
         tcp_dump = f.readlines()
-#            return tcp_dump, 1
+        if len(tcp_dump) < 50:
+            return None
 
     feature = pd.Series(tcp_dump).str.slice(0,-1).str.split('\t',expand = True).astype("float")
     feature = np.array(feature.iloc[:,1]).astype("int")
@@ -82,6 +83,8 @@ if __name__== '__main__':
     if cf['open_world'] == '1':
         UNMON_SITE_NUM = int(cf['unmonitored_site_num'])
         num_class += 1
+    else:
+        UNMON_SITE_NUM = 0 
         
     '''read in arg'''
     parser = argparse.ArgumentParser(description='DF feature extraction')
@@ -119,16 +122,19 @@ if __name__== '__main__':
     flist = []
     for i in range(MON_SITE_NUM):
         for j in range(MON_INST_NUM):
-            flist.append(  os.path.join( args.traces_path, str(i) + '-' + str(j) + args.format) )
+            if os.path.exists( os.path.join(args.traces_path, str(i) + "-" + str(j)+ args.format) ):
+                flist.append(  os.path.join( args.traces_path, str(i) + '-' + str(j) + args.format) )
     for i in range(UNMON_SITE_NUM):
-        flist.append( os.path.join( args.traces_path, str(i)+ args.format) )
+        if os.path.exists( os.path.join(args.traces_path, str(i)+ args.format) ):
+            flist.append( os.path.join( args.traces_path, str(i)+ args.format) )
 
     if args.mode == "all":
         ##this is for evaluating front, 9:1 ,training : testing
         # fpath = os.path.join(args.traces_path,'*')
         # flist = glob.glob(fpath)
         data_dict = {'feature':[],'label':[]}
-        raw_data_dict = parallel(flist, n_jobs = 20)
+        res = parallel(flist, n_jobs = 20)
+        raw_data_dict = [i for i in res if i] 
         features, label = zip(*raw_data_dict)
         features = pad_sequences(features, padding ='post', truncating = 'post', value = 0, maxlen = LENGTH)
         
@@ -154,7 +160,8 @@ if __name__== '__main__':
         # fpath = os.path.join(args.traces_path,'*')
         # flist = glob.glob(fpath)
         data_dict = {'feature':[],'label':[]}
-        raw_data_dict = parallel(flist, n_jobs = 20)
+        res = parallel(flist, n_jobs = 20)
+        raw_data_dict = [i for i in res if i] 
         features, label = zip(*raw_data_dict)
         features = pad_sequences(features, padding ='post', truncating = 'post', value = 0, maxlen = LENGTH)
         
@@ -175,7 +182,8 @@ if __name__== '__main__':
         # fpath = os.path.join(args.traces_path,'*')
         # flist = glob.glob(fpath)
         data_dict = {'feature':[],'label':[]}
-        raw_data_dict = parallel(flist, n_jobs = 20)
+        res = parallel(flist, n_jobs = 20)
+        raw_data_dict = [i for i in res if i] 
         features, label = zip(*raw_data_dict)
         features = pad_sequences(features, padding ='post', truncating = 'post', value = 0, maxlen = LENGTH)
         
@@ -196,8 +204,9 @@ if __name__== '__main__':
         headflist = glob.glob(headfpath)
         otherflist = glob.glob(otherfpath)
 
-
-        raw_data_dict = parallel(headflist, n_jobs = 20)
+        print(len(headflist), len(otherflist))
+        res = parallel(headflist, n_jobs = 20)
+        raw_data_dict = [i for i in res if i] 
         features, label = zip(*raw_data_dict)
         features = pad_sequences(features, padding ='post', truncating = 'post', value = 0, maxlen = LENGTH)
         labels = to_categorical(label, num_classes = num_class) 
@@ -213,10 +222,11 @@ if __name__== '__main__':
 
         if len(otherflist) > 1:
             data_dict = {'feature':[],'label':[]}
-            raw_data_dict = parallel(otherflist, n_jobs = 20)
+            res = parallel(otherflist, n_jobs = 20)
+            raw_data_dict = [i for i in res if i] 
             features, label = zip(*raw_data_dict)
             features = pad_sequences(features, padding ='post', truncating = 'post', value = 0, maxlen = LENGTH)
-            labels = to_categorical(label, num_classes = MON_SITE_NUM+1)  
+            labels = to_categorical(label, num_classes = num_class)  
 
             logger.info("Test other data:{}, {}".format(features.shape, labels.shape))
             data_dict['feature'], data_dict['label'] = features,labels

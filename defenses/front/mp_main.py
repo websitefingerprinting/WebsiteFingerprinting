@@ -22,12 +22,8 @@ def init_directories():
         makedirs(ct.RESULTS_DIR)
 
     # Define output directory
-    timestamp = strftime('%m%d_%H%M')
+    timestamp = strftime('%m%d_%H%M_%S')
     output_dir = join(ct.RESULTS_DIR, 'ranpad2_'+timestamp)
-    while os.path.exists(output_dir):
-        timestamp = strftime('%m%d_%H%M')
-        output_dir = join(ct.RESULTS_DIR, 'ranpad2_'+timestamp)
-
     makedirs(output_dir)
     return output_dir
 def config_logger(args):
@@ -88,12 +84,10 @@ def dump(trace, fname):
     global output_dir
     with open(join(output_dir,fname), 'w') as fo:
         for packet in trace:
-            fo.write("{}".format(packet[0]) +'\t' + "{}".format(int(packet[1]))\
+            fo.write("{:.4f}".format(packet[0]) +'\t' + "{}".format(int(packet[1]))\
                 + ct.NL)
 
 def simulate(fdir):
-    if not os.path.exists(fdir):
-        return
     # logger.debug("Simulating trace {}".format(fdir))
     np.random.seed(datetime.datetime.now().microsecond)
     trace = load_trace(fdir)
@@ -190,12 +184,14 @@ if __name__ == '__main__':
     # print("client_dummy_pkt_num: {}\nserver_dummy_pkt_num: {}".format(client_dummy_pkt_num,server_dummy_pkt_num))
     # print("max_wnd: {}\nmin_wnd: {}".format(max_wnd,min_wnd))
     # print("start_padding_time:", start_padding_time)
+
+
+    # use UNMON_SITE_NUM to represent the number of l-traces here.
     flist  = []
-    for i in range(MON_SITE_NUM):
-        for j in range(MON_INST_NUM):
-            flist.append(join(args.p, str(i)+'-'+str(j)+args.format))
     for i in range(UNMON_SITE_NUM):
-        flist.append(join(args.p, str(i)+args.format))
+        if os.path.exists(join(args.p, str(i)+args.format)):
+            flist.append(join(args.p, str(i)+args.format))
+    # print(len(flist))
 
     # Init run directories
     output_dir = init_directories()

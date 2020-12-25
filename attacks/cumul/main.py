@@ -2,7 +2,7 @@ import numpy as np
 import sys
 #for calculate the loss
 from sklearn.metrics import log_loss
-from sklearn.metrics.scorer import make_scorer
+from sklearn.metrics import make_scorer
 
 #import three machine learning models
 from sklearn.svm import SVC
@@ -28,7 +28,7 @@ import pandas
 
 import pickle
 
-from sklearn.externals import joblib
+import joblib
 
 
 logger = logging.getLogger('cumul')
@@ -112,6 +112,7 @@ def config_logger(args):
 
 #SVM with RBF kernel for open world!!
 def GridSearch(train_X,train_Y):
+    global OPEN_WORLD
     #find the optimal gamma
     param_grid = [
     { 
@@ -119,9 +120,10 @@ def GridSearch(train_X,train_Y):
      'gamma' : [2**-3,2**-1,2**1,2**3]
     }
     ]
-
-    my_scorer = make_scorer(score_func, greater_is_better=True)
-
+    if OPEN_WORLD:
+        my_scorer = make_scorer(score_func, greater_is_better=True)
+    else:
+        my_scorer = "accuracy"
     # clf = GridSearchCV(estimator = SVC(kernel = 'rbf'), param_grid = param_grid, \
     #     scoring = 'accuracy', cv = 10, verbose = 2, n_jobs = -1)
     clf = GridSearchCV(estimator = SVC(kernel = 'rbf'), param_grid = param_grid, \
@@ -133,7 +135,7 @@ def GridSearch(train_X,train_Y):
 
 
 if __name__ == '__main__':
-    global MON_SITE_NUM, tps, wps, fps, ps, ns, flag
+    global MON_SITE_NUM, tps, wps, fps, ps, ns, flag, OPEN_WORLD
     tps, wps, fps, ps, ns = 0,0,0,0,0
     flag = 0
 
@@ -142,13 +144,20 @@ if __name__ == '__main__':
 
     cf = read_conf(ct.confdir)
     MON_SITE_NUM = int(cf['monitored_site_num'])
-
+    if cf['open_world'] == '1':
+        UNMON_SITE_NUM = int(cf['unmonitored_site_num'])
+        OPEN_WORLD = 1
+    else:
+        OPEN_WORLD = 0
 
     # logger.info('loading data...')
-    dic = np.load(args.fp).item()   
+    dic = np.load(args.fp,allow_pickle=True).item()   
     X = np.array(dic['feature'])
     y = np.array(dic['label'])
-    
+    if not OPEN_WORLD:
+        X = X[y<MON_SITE_NUM]
+        y = y[y<MON_SITE_NUM]
+    # print(X.shape, y.shape)   
 
     #normalize the data
     scaler = preprocessing.MinMaxScaler((-1,1))
@@ -162,33 +171,34 @@ if __name__ == '__main__':
    
     C = clf.best_params_['C']
     gamma = clf.best_params_['gamma']
-    # C, gamma = 131072, 8.000000
+    #C, gamma = 131072, 8.000000
     # C, gamma = 8192, 8.00
     # logger.info('Best params are: %d %f'%(C,gamma))
 
 
-    # sss = StratifiedShuffleSplit(n_splits=10, test_size=0.1, random_state=0)
-    
-
-    # folder_num = 0
-    # flag = 1 
-    # for train_index, test_index in sss.split(X,y):
-    #     # logger.info('Testing fold %d'%folder_num)
-    #     folder_num += 1
-    #     # print("TRAIN:", train_index, "TEST:", test_index)
-    #     X_train, X_test = X[train_index], X[test_index]
-    #     y_train, y_test = y[train_index], y[test_index]   
-    #     model = SVC(C = C, gamma = gamma, kernel = 'rbf')
-    #     model.fit(X_train, y_train)
-    #     y_pred = model.predict(X_test)
-    #     r_precision = score_func(y_test, y_pred)
-    #     # logger.info('%d-presicion is %.4f'%(r, r_precision))
-
-    # print("%d %d %d %d %d"%(tps,wps,fps,ps,ns))
+    sss = StratifiedShuffleSplit(n_splits=10, test_size=0.1, random_state=0)
 
 
-    model = SVC(C = C, gamma = gamma, kernel = 'rbf')
-    model.fit(X, y)
-    joblib.dump(model, 'ranpad2_0610_2057_norm.pkl')
-    print('model have been saved')
+    folder_num = 0
+    flag = 1
+    for train_index, test_index in sss.split(X,y):
+        # logger.info('Testing fold %d'%folder_num)
+        folder_num += 1
+        # print("TRAIN:", train_index, "TEST:", test_index)
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+        model = SVC(C = C, gamma = gamma, kernel = 'rbf')
+        model.fit(X_train, y_train)
+
+        y_pred = model.predict(X_test)
+        r_precision = score_func(y_test, y_pred)
+        # logger.info('%d-presicion is %.4f'%(r, r_precision))
+
+    print("%d %d %d %d %d"%(tps,wps,fps,ps,ns))
+
+
+    # model = SVC(C = C, gamma = gamma, kernel = 'rbf')
+    # model.fit(X, y)
+    # joblib.dump(model, 'ranpad2_0610_2057_norm.pkl')
+    # print('model have been saved')
 

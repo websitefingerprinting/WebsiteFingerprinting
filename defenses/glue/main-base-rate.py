@@ -1,4 +1,3 @@
-import numpy as np
 import random
 import constants as ct
 
@@ -68,9 +67,9 @@ def dump(trace, fpath):
 
  
 
-def merge(this, other, start, t = 999, cnt = 1):
+def merge(this, other, start, cnt = 1):
     '''t = 999, pad all pkts, otherwise pad up to t seconds'''
-    other[:0] -= other[0][0]
+    other[:,0] -= other[0][0]
     other[:,0] += start
     other[:,1] *= cnt
     if this is None:
@@ -117,7 +116,7 @@ def MergePad2(output_dir, outputname ,noise, mergelist = None, waiting_time = 10
                 t = uniform()
             small_time = est_iat(trace)
             logger.debug("Delta t is %.5f seconds"%(small_time))
-            _, noise_site = load_trace(noise_fname,min(t,waiting_time)-small_time,True)
+            _, noise_site = load_trace(noise_fname, max(t - small_time, 0),True)
             this = merge(this, noise_site,start+small_time, cnt = 999)
             # logger.info("Dwell time is %.2f seconds"%(t))
             start = start + t
@@ -268,7 +267,7 @@ def CreateMergedTrace(traces_path, list_names, N, M, BaseRate):
     '''generate length-N merged trace'''
     '''with prob baserate/(baserate+1) a nonsensitive trace is chosen'''
     '''with prob 1/(baserate+1) a sensitive trace is chosen'''
-    list_sensitive = glob.glob(join(args.traces_path, '*-*'))
+    list_sensitive = glob.glob(join(traces_path, '*-*'))
     list_nonsensitive = list(set(list_names) - set(list_sensitive))
     
     s1 = len(list_sensitive)
@@ -287,7 +286,7 @@ def CreateRandomMergedTrace(traces_path, list_names, N, M,BaseRate):
     '''generate random-length merged trace'''
     '''with prob baserate/(baserate+1) a nonsensitive trace is chosen'''
     '''with prob 1/(baserate+1) a sensitive trace is chosen'''
-    list_sensitive = glob.glob(join(args.traces_path, '*-*'))
+    list_sensitive = glob.glob(join(traces_path, '*-*'))
     list_nonsensitive = list(set(list_names) - set(list_sensitive))
     
     s1 = len(list_sensitive)

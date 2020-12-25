@@ -5,9 +5,12 @@ Created on Sat Nov 10 16:28:28 2018
 
 @author: aaron
 """
-from main import *
-logger = logging.getLogger('cumul')
-
+from main import score_func, read_conf
+import constants as ct
+import argparse
+import joblib 
+import numpy as np
+from sklearn import preprocessing
 
 
 def parse_arguments():
@@ -32,7 +35,6 @@ def parse_arguments():
                         help='path to the log file. It will print to stdout by default.')
     # Parse arguments
     args = parser.parse_args()
-    config_logger(args)
     return args
 
 def score_func(ground_truths, predictions):
@@ -81,7 +83,7 @@ if __name__ == '__main__':
 
 
     # logger.info('loading original data...')
-    dic = np.load(args.o).item()   
+    dic = np.load(args.o, allow_pickle=True).item()   
     X = np.array(dic['feature'])
     y = np.array(dic['label'])    
     #normalize the data
@@ -89,7 +91,7 @@ if __name__ == '__main__':
     scaler.fit(X)
 
     # logger.info('loading test data...')
-    dic = np.load(args.p).item()   
+    dic = np.load(args.p, allow_pickle=True).item()   
     X = np.array(dic['feature'])
     y = np.array(dic['label'])
     X = scaler.transform(X)
