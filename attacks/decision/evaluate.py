@@ -9,7 +9,7 @@ import const
 import multiprocessing
 import random
 import pandas as pd
-from sklearn.externals import joblib 
+import joblib 
 from sklearn.preprocessing import MinMaxScaler
 import os
 from train import relax_acc
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     # logger.info('loading data...')
     testname = args.p.split('/')[-1].split('.')[0]
-    dic = np.load(args.p).item()   
+    dic = np.load(args.p, allow_pickle = True).item()   
     X_test = np.array(dic['feature'])
     y_test = np.array(dic['label'])
     # print(np.unique(y_test))

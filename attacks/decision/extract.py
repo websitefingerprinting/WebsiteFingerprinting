@@ -143,7 +143,7 @@ if __name__== '__main__':
     data_dict['feature'] = parallel(flist,n_jobs = 20)
     #there will be a file record the number of merged traces in input folder
     if args.num == None:
-        data_dict['label'] = np.load(os.path.join(args.traces_path,'num.npy')) -2 
+        data_dict['label'] = np.load(os.path.join(args.traces_path,'num.npy'), allow_pickle = True) -2 
     else:
         data_dict['label'] = np.ones(len(data_dict['feature']))* (args.num-2)
     outputdir = const.featuredir+args.traces_path.split('/')[-2]
