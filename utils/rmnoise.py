@@ -6,25 +6,15 @@ import os
 import numpy as np
 import multiprocessing as mp
 import subprocess
-import glob 
+import glob
+import sys
+
 logger = logging.getLogger('norm')
 
-def config_logger(args):
-    # Set file
-    log_file = sys.stdout
-    if args.log != 'stdout':
-        log_file = open(args.log, 'w')
-    ch = logging.StreamHandler(log_file)
 
-    # Set logging format
-    ch.setFormatter(logging.Formatter(ct.LOG_FORMAT))
-    logger.addHandler(ch)
-
-    # Set level format
-    logger.setLevel(logging.INFO)
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='It simulates adaptive padding on a set of web traffic traces.')
+    parser = argparse.ArgumentParser(description='It remove glue traces and get corresponding clean l-traces.')
 
     parser.add_argument('p',
                         metavar='<traces path>',
@@ -49,14 +39,14 @@ def load_trace(fdir):
 def dump(trace, fdir):
     with open(fdir, 'w') as fo:
         for packet in trace:
-            fo.write("{}".format(packet[0]) +'\t' + "{}".format(int(packet[1]))\
+            fo.write("{:.4f}".format(packet[0]) +'\t' + "{}".format(int(packet[1]))\
                 + '\n')
 def rmNoise(fdir):
     global output_dir
     trace = load_trace(fdir)
     directions = trace[:,1]
 
-    newtrace = trace[np.where(abs(directions) < 20)].copy()
+    newtrace = trace[np.where(abs(directions) < 50)].copy()
     name = fdir.split('/')[-1]
     addr = os.path.join(output_dir, name)   
     # print("Dumped to {}".format(addr))
