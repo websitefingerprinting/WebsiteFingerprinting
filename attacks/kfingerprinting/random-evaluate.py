@@ -10,10 +10,12 @@ import const as ct
 import logging
 import glob
 import multiprocessing as mp
-from extract import *
+from extract import TOTAL_FEATURES
 logger = logging.getLogger('kf')
 global trainleaves
 global model
+import  os
+
 ####note I modified get_single_neighbour in this code!!!!!!!!!!
 
 
@@ -95,7 +97,7 @@ def read_conf(file):
 
 
 def get_single_neighbor(testleaf):
-    global trainleaves
+    global trainleaves, MON_SITE_NUM
     K = 3
     # print(trainleaves[:2])
     trainleaf, trainlabel = list(zip(*trainleaves))[0], list(zip(*trainleaves))[1]
@@ -107,12 +109,29 @@ def get_single_neighbor(testleaf):
     if len(set(k_neighbors)) == 1:
         return k_neighbors[0]
     else:
-        return 100
+        return MON_SITE_NUM
 
+def extractfeature(f):
+    global MON_SITE_NUM
+    fname = f.split('/')[-1].split(".")[0]
+    # logger.info('Processing %s...'%fname)
+    try:
+        if '-' in fname:
+            label = fname.split('-')
+            label = (int(label[0]), int(label[1]))
+        else:
+            label = (MON_SITE_NUM, int(fname))
+        with open(f,'r') as f:
+            tcp_dump = f.readlines()
+        feature = TOTAL_FEATURES(tcp_dump)
+        return (feature, label)
+    except Exception as e:
+        # a trace that is too short
+        return ([0] * 175, label)
 
-def pred_sing_trace(fdirs):
+def pred_sing_trace(fdir):
     global model
-    y_dirs = glob.glob(os.path.join(fdirs, '*'))
+    y_dirs = glob.glob(os.path.join(fdir, '*'))
     X_test  = []
     y_pred = []
     [X_test.append(extractfeature(f)[0]) for f in y_dirs]
@@ -120,21 +139,18 @@ def pred_sing_trace(fdirs):
     [y_pred.append(get_single_neighbor(testleaf)) for testleaf in testleaves]
 
 
-    outputdir = os.path.join(ct.randomdir, fdirs.split('/')[-3],fdirs.split('/')[-2])
-    trace_id = fdirs.split('/')[-1]
+    outputdir = os.path.join(ct.randomdir, fdir.split('/')[-3], fdir.split('/')[-2])
+    trace_id = fdir.split('/')[-1]
 
-    if not os.path.exists(outputdir):
-        os.makedirs(outputdir)
-    with open(os.path.join(outputdir,trace_id + '-predresult.txt'),'w') as f:
+    with open(os.path.join(outputdir, trace_id + '-predresult.txt'),'w') as f:
         [f.write(str(y)+'\n') for y in y_pred]
 
-def parallel(fdirs,n_jobs = 40):
+def parallel(fdirs,n_jobs = 20):
     pool = mp.Pool(n_jobs)
     pool.map(pred_sing_trace, fdirs)    
 
 if __name__ == '__main__':   
-    global trainleaves
-    global model
+    global trainleaves, model, MON_SITE_NUM
     init_logger()
     args = parse_arguments()
     logger.info("Arguments: %s" % (args))
@@ -142,13 +158,16 @@ if __name__ == '__main__':
     MON_SITE_NUM = int(cf['monitored_site_num'])
     logger.info('loading model...')
     model =  joblib.load(args.m)
-    train_leaf = np.load(args.o).item()
+    train_leaf = np.load(args.o, allow_pickle = True).item()
     trainleaves = list(train_leaf)
 
 
     testfolder = args.p
     fdirs = glob.glob(os.path.join(args.p,args.mode,'*'))
-    
+    outputdir = os.path.join(ct.randomdir, fdirs[0].split('/')[-3], fdirs[0].split('/')[-2])
+    print(outputdir)
+    if not os.path.exists(outputdir):
+        os.makedirs(outputdir)
     # for f in fdirs:
     #     pred_sing_trace((f,model))
     parallel(fdirs)

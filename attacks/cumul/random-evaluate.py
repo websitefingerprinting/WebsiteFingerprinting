@@ -10,6 +10,7 @@ import glob
 import multiprocessing as mp 
 import os 
 from extract import *
+import joblib
 logger = logging.getLogger('cumul')
 
 
@@ -42,6 +43,24 @@ def parse_arguments():
     config_logger(args)
     return args
 
+
+def extractfeature(f):
+    global MON_SITE_NUM
+    fname = f.split('/')[-1].split(".")[0]
+    # logger.info('Processing %s...'%f)
+    try:
+        t = parse(f)
+        features = extract(t)
+        if '-' in fname:
+            label = int(fname.split('-')[0])
+        else:
+            label = int(MON_SITE_NUM)
+
+        return (features, label)
+    except Exception as e:
+        print(e)
+        return None
+
 def parallel(fdirs, scaler, model, n_jobs = 20): 
     pool = mp.Pool(n_jobs)
     params = zip(fdirs, [scaler]*len(fdirs), [model]*len(fdirs) )
@@ -67,19 +86,22 @@ if __name__ == '__main__':
     global MON_SITE_NUM
     args = parse_arguments()
     logger.info("Arguments: %s" % (args))
+    cf = read_conf(ct.confdir)
+    MON_SITE_NUM = int(cf['monitored_site_num'])
 
     model =  joblib.load(args.m)
     logger.info('loading original data...')
-    dic = np.load(args.o).item()   
+    dic = np.load(args.o, allow_pickle = True).item()
     X = np.array(dic['feature'])
-    y = np.array(dic['label'])    
-    #normalize the data
+    y = np.array(dic['label'])
+
+    # normalize the data
     scaler = preprocessing.MinMaxScaler((-1,1))
     scaler.fit(X)
 
     testfolder = args.p
     fdirs = glob.glob(os.path.join(args.p,args.mode,'*'))
-    # for f in fdirs:
+    # for f in fdirs[:]:
     #     pred_sing_trace((f,scaler,model))
     parallel(fdirs, scaler, model)
 

@@ -371,7 +371,7 @@ def TOTAL_FEATURES(trace_data, max_size=175):
     ALL_FEATURES.extend(per_sec)
 
 
-    while len(ALL_FEATURES)<max_size:
+    while len(ALL_FEATURES) < max_size:
         ALL_FEATURES.append(0)
     features = ALL_FEATURES[:max_size]
 
@@ -388,26 +388,28 @@ def parallel(flist,n_jobs = 20):
     data_dict = pool.map(extractfeature, flist)
     return data_dict
 
-def extractfeature(f, MON_SITE_NUM = 100):
+def extractfeature(f):
+    global MON_SITE_NUM
     fname = f.split('/')[-1].split(".")[0]
     # logger.info('Processing %s...'%fname)
     try:
         with open(f,'r') as f:
             tcp_dump = f.readlines()
+            if len(tcp_dump) < 50:
+                return None
         feature = TOTAL_FEATURES(tcp_dump)
+        if '-' in fname:
+            label = fname.split('-')
+            label = (int(label[0]), int(label[1]))
+        else:
+            label = (MON_SITE_NUM, int(fname))
+        return (feature,label)
     except:
-        print("Bad file")
-        print(f)
-        feature = [0]*175
-    if '-' in fname:
-        label = fname.split('-')
-        label = (int(label[0]), int(label[1]))
-    else:
-        label = (MON_SITE_NUM, int(fname))
-    return (feature,label)
+        return None
 
 
 if __name__== '__main__':
+    global MON_SITE_NUM
     '''initialize logger'''
     logger = init_logger()
     
@@ -417,72 +419,37 @@ if __name__== '__main__':
     MON_INST_NUM = int(cf['monitored_inst_num'])
     if cf['open_world'] == '1':
         UNMON_SITE_NUM = int(cf['unmonitored_site_num'])
+    else:
+        UNMON_SITE_NUM = 0
         
     '''read in arg'''
     parser = argparse.ArgumentParser(description='k-FP feature extraction')
     parser.add_argument('traces_path',
                         metavar='<traces path>',
                         help='Path to the directory with the traffic traces to be simulated.')
+    parser.add_argument('-format',
+                        metavar='<file suffix>',
+                        default = ".cell", )
     args = parser.parse_args()
     data_dict = {'feature':[],'label':[]}
   
-    fpath = os.path.join(args.traces_path, '*/*')
-    flist = glob.glob(fpath)
-    if len(flist) == 0:
-        fpath = os.path.join(args.traces_path,'*')
-        flist = glob.glob(fpath)
-        if len(flist)  == 0:
-            logger.error('Path {} is incorrect!'.format(fpath))
 
-
-    raw_data_dict = parallel(flist,n_jobs = 20)
+    flist = []
+    for i in range(MON_SITE_NUM):
+        for j in range(MON_INST_NUM):
+            if os.path.exists( os.path.join(args.traces_path, str(i) + "-" + str(j)+ args.format) ):
+                flist.append(os.path.join(args.traces_path, str(i) + "-" + str(j)+ args.format) )
+    for i in range(UNMON_SITE_NUM):
+        if os.path.exists( os.path.join(args.traces_path, str(i)+ args.format) ):
+            flist.append( os.path.join(args.traces_path, str(i)+ args.format) )
+    print(len(flist))
+    res = parallel(flist,n_jobs = 20)
+    raw_data_dict = [i for i in res if i] 
+    print("After removal: {}".format(len(raw_data_dict)))
     data_dict['feature'], data_dict['label'] = zip(*raw_data_dict)
 
-    # for f in flist:
-    #     fname = f.split('/')[-1]
-    #     logger.info('Processing %s...'%fname)
-    #     tcp_dump = open(f).readlines()
-    #     data_dict['feature'].append(TOTAL_FEATURES(tcp_dump))
-    #     if '-' in fname:
-    #         label = fname.split('-')
-    #         label = (int(label[0]), int(label[1]))
-    #     else:
-    #         label = (MON_SITE_NUM, int(fname))
-    #     data_dict['label'].append(label)
-         
-            
-    
-#    
-#    
-#    
-#    cnt =1 
-#    for i in range(MON_SITE_NUM):
-#        for j in range(MON_INST_NUM):
-#            fname = str(i)+'-'+str(j) 
-#            if os.path.exists(os.path.join(args.traces_path,fname)):
-#                cnt += 1
-#                logger.info('Processing %s...'%fname)
-#                tcp_dump = open(os.path.join(args.traces_path,fname)).readlines()
-#                data_dict['feature'].append(TOTAL_FEATURES(tcp_dump))
-#                label = (i, j)
-#                data_dict['label'].append(label)
-#            else:
-#                logger.warn('File %s does not exist!'%fname)
-#  
-#    if cf['open_world'] == '1':
-#        for i in range(UNMON_SITE_NUM):
-#            if os.path.exists(os.path.join(args.traces_path,str(i))):
-#                cnt += 1
-#                logger.info('Processing %s...'%i)
-#                tcp_dump = open(os.path.join(args.traces_path,str(i))).readlines()
-#                data_dict['feature'].append(TOTAL_FEATURES(tcp_dump))
-#                label = (MON_SITE_NUM,i)
-#                data_dict['label'].append(label)
-#            else:
-#                logger.warn('File %s does not exist!'%i)
-#    
-#    
-    outputdir = const.outputdir+args.traces_path.split('/')[-2]
+ 
+    outputdir = const.outputdir+args.traces_path.rstrip('/').split('/')[-1]
     np.save(outputdir,data_dict)        
 
     # logger.info('Save to %s.npy'%outputdir)

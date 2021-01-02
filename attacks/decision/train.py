@@ -9,7 +9,7 @@ import const
 import multiprocessing
 import random
 import pandas as pd
-import joblib 
+import joblib
 from sklearn.preprocessing import MinMaxScaler
 import os
 
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     
     
     logger.info('loading data...')
-    dic = np.load(args.p, allow_pickle = True).item()   
+    dic = np.load(args.p, allow_pickle=True).item()
     
     X = np.array(dic['feature'])
     y = np.array(dic['label'])
