@@ -84,7 +84,7 @@ def dump(trace, fname):
     global output_dir
     with open(join(output_dir,fname), 'w') as fo:
         for packet in trace:
-            fo.write("{}".format(packet[0]) +'\t' + "{}".format(int(packet[1]))\
+            fo.write("{:.4f}".format(packet[0]) +'\t' + "{}".format(int(packet[1]))\
                 + ct.NL)
 
 def simulate(fdir):
