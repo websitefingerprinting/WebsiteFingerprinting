@@ -1,5 +1,26 @@
 # Website Fingerprinting attack and defense codes in Python. 
 
+This is the repository of codes for the paper "Zero-delay Lightweight Defenses against Website Fingerprinting" in USENIX Security 2020.
+To cite the paper:
+```
+@inproceedings{DBLP:conf/uss/GongW20,
+  author    = {Jiajun Gong and
+               Tao Wang},
+  editor    = {Srdjan Capkun and
+               Franziska Roesner},
+  title     = {Zero-delay Lightweight Defenses against Website Fingerprinting},
+  booktitle = {29th {USENIX} Security Symposium, {USENIX} Security 2020, August 12-14,
+               2020},
+  pages     = {717--734},
+  publisher = {{USENIX} Association},
+  year      = {2020},
+  url       = {https://www.usenix.org/conference/usenixsecurity20/presentation/gong},
+  timestamp = {Fri, 29 Jan 2021 22:08:55 +0100},
+  biburl    = {https://dblp.org/rec/conf/uss/GongW20.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+```
+
 ## Folder structure
     .
     ├── attacks  #WF attacks                     
