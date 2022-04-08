@@ -91,6 +91,7 @@ def extractfeature(f):
 def pred_sing_trace(fdir):
     global MON_SITE_NUM, model
     y_dirs = glob.glob(os.path.join(fdir, '*'))
+    y_dirs.sort(key=lambda d: int(d.split('/')[-1])) # remember to sort!!
     # logger.info("Process {}".format(y_dirs)) 
     X_test  = []
     [X_test.append(extractfeature(f)) for f in y_dirs]
