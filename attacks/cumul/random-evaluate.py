@@ -69,6 +69,7 @@ def parallel(fdirs, scaler, model, n_jobs = 20):
 def pred_sing_trace(param):
     fdir, scaler, model = param[0], param[1], param[2]
     y_dirs = glob.glob(os.path.join(fdir, '*'))
+    y_dirs.sort(key=lambda d: int(d.split('/')[-1])) # remember to sort!!
     X_test  = []
     [X_test.append(extractfeature(f)[0]) for f in y_dirs]
     X_test = scaler.transform(X_test)
