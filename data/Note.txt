@@ -12,5 +12,5 @@ data/example-dataset/100
 
 
 The dataset can be loaded from 
-https://www.cse.ust.hk/~taow/wf/data/
+https://www.cs.sfu.ca/~taowang/wf/index.html
 ...
