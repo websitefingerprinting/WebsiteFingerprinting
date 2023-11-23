@@ -62,14 +62,16 @@ python3 mp-main.py ../results/glued_trace/ -format ".merge"
 ```
 This adds front noise to l-traces defended by Glue
 
-### Run Glue
+### Run GLUE
 ```
-python3 main.py ../../data/tor2-5-1/ -n 4000 -b 1 -m 2 -noise True -mode fix
+python3 main-base-rate.py ../../data/tor2-5-1/ -n 4000 -b 1 -m 2 -noise True -mode fix
 ```
 n: number of l-traces; m: l; b: base rate; noise: add noise or not; 
 mode: fix -> all traces are m length; random -> length is randomly chosen from (2, m)
 
 Generate 4000 noisy 2-traces with base rate 1   
+
+**NOTE**: When `-noise True`, the program requires a list of non-monitored sites (saved in `nonsens.txt`), which are randomly sampled as GLUE noise traces to inject into an \ell-trace. You should creat your own list of glue noise traces and put them in the right place. Otherwise, you will get `FileNotFoundError`. The `nonsens.txt` is loaded at Line 92 of `main-base-rate.py`. 
 
 
 ## Run kFP or CUMUL or DF attack
